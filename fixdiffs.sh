@@ -1,0 +1,3 @@
+#!/bin/bash
+cat ../poplist | while read i; do cat ../poplist | while read j; do join missing.$i fixed.$j > tmp; join missing.$j fixed.$i >> tmp; sort -u tmp | join -1 1 -2 2 - ../sorted.populations.snps.vep | grep missense | cut -d" " -f1,4,10-14 | sed -re 's/(.*)IMPACT.*SYMBOL=([^\;]*)\;.*$/\1 \2/' -e 's/\:/ /' | sort -u | awk '{print $4"\t"$1"õ"$2"õ"$3"õ"$5"õ"$6"õ"$7"õ"$8}' | sort -k2,2 -k1,1nr | sort -uk2,2 | sed 's/õ/\t/g' | awk 'BEGIN {OFS="\t"} {print $2,$3,$8,$4,$6,$5,$7}' | sort -n -k1,1 -k2,2 | sed "s/^/${i}-${j}\t/" > ${i}-${j}.fixdiff_detailed.tsv; done; done
+cat comparelist | while read i; do cat $i.fixdiff_detailed.tsv >> fixdiffs.detailed.tsv; done
